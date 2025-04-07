@@ -12,7 +12,7 @@ def extract_text():
     if not request.files:
         return jsonify({"error": "No files received"}), 400
 
-    extracted_texts = []
+    extracted_texts = ""
 
     for key in request.files:
         file = request.files[key]
@@ -23,13 +23,15 @@ def extract_text():
                 pdf_reader = PyPDF2.PdfReader(io.BytesIO(file.read()))
                 text = " ".join([page.extract_text() for page in pdf_reader.pages if page.extract_text()])
                 cleaned_text = re.sub(r'\s+', ' ', text).strip()
-                extracted_texts.append(f"{key}: {cleaned_text}")
+                extracted_texts += f"{key}: {cleaned_text}"
             except Exception as e:
                 return jsonify({"error": f"Failed to process {key}: {str(e)}"}), 500
         else:
-            extracted_texts.append(f"{key}: [Non-PDF file received]")
+            extracted_texts += f"{key}: {request.form.get(key, ' ')}"
+
     event = request.form.get('event', 'default_event')
-    #chromaAdd(extracted_texts, event)
+    print(extracted_texts)
+    chromaAdd(extracted_texts, event)
     return jsonify({
         "message": "Files received and processed successfully.",
         "extracted_texts": extracted_texts,

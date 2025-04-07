@@ -36,7 +36,7 @@ def chromaUpdate(text, doc_ID):
   collection.add(
       ids = [doc_ID],  # Unique identifierss
       documents = [text],
-      embeddings = [get_embedding(text)[0]],  # Generate embeddings
+      embeddings = [get_embedding(text)],  # Generate embeddings
       metadatas = [{"source": "article"}]  # Add metadata
   )
 
